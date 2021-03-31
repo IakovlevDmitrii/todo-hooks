@@ -29,9 +29,21 @@ export default class App extends Component {
     filter: 'all',
   };
 
+  getIndex = (tasks, id) => {
+    return tasks.findIndex((task) => task.id === id);
+  };
+
   deleteTask = (id) => {
     this.setState(({ tasks }) => {
-      const index = tasks.findIndex((task) => task.id === id);
+      const index = this.getIndex(tasks, id);
+      const oldTask = tasks[index];
+
+      const { isTimerStopped } = oldTask;
+      if (!isTimerStopped) {
+        const timer = `timer${id}`;
+        clearInterval(this[timer]);
+      }
+
       const newTasks = [...tasks.slice(0, index), ...tasks.slice(index + 1)];
 
       return {
@@ -62,11 +74,11 @@ export default class App extends Component {
     });
   };
 
-  editTaskText = (id, taskText) => {
+  editStateField = (id, name, value) => {
     this.setState(({ tasks }) => {
-      const index = tasks.findIndex((task) => task.id === id);
+      const index = this.getIndex(tasks, id);
       const oldTask = tasks[index];
-      const newTask = { ...oldTask, taskText };
+      const newTask = { ...oldTask, [name]: value };
       const newTasks = [...tasks.slice(0, index), newTask, ...tasks.slice(index + 1)];
 
       return {
@@ -75,10 +87,15 @@ export default class App extends Component {
     });
   };
 
+  editTaskText = (id, taskText) => {
+    this.editStateField(id, 'taskText', taskText);
+  };
+
   onToggleCompleted = (id) => {
     this.setState(({ tasks }) => {
-      const index = tasks.findIndex((task) => task.id === id);
+      const index = this.getIndex(tasks, id);
       const oldTask = tasks[index];
+
       const newTask = { ...oldTask, isCompleted: !oldTask.isCompleted };
       const newTasks = [...tasks.slice(0, index), newTask, ...tasks.slice(index + 1)];
 
@@ -92,17 +109,39 @@ export default class App extends Component {
     this.setState({ filter });
   };
 
-  editTimeLeft = (id, timeLeft) => {
+  onTimerPlay = (id) => {
+    const timer = `timer${id}`;
+    this[timer] = setInterval(() => this.reduceTimeLeft(id), 1000);
+  };
+
+  reduceTimeLeft = (id) => {
     this.setState(({ tasks }) => {
-      const index = tasks.findIndex((task) => task.id === id);
+      const index = this.getIndex(tasks, id);
       const oldTask = tasks[index];
-      const newTask = { ...oldTask, timeLeft };
+      let { timeLeft } = oldTask;
+
+      timeLeft -= 1;
+
+      if (timeLeft === 0) {
+        const timer = `timer${id}`;
+        clearInterval(this[timer]);
+      }
+
+      const isTimerStopped = false;
+      const newTask = { ...oldTask, isTimerStopped, timeLeft };
       const newTasks = [...tasks.slice(0, index), newTask, ...tasks.slice(index + 1)];
 
       return {
         tasks: newTasks,
       };
     });
+  };
+
+  onPause = (id) => {
+    const timer = `timer${id}`;
+    clearInterval(this[timer]);
+
+    this.editStateField(id, 'isTimerStopped', true);
   };
 
   createTask(taskText, timeLeft = 0) {
@@ -112,6 +151,7 @@ export default class App extends Component {
     return {
       id,
       isCompleted: false,
+      isTimerStopped: true,
       startTime: new Date(),
       taskText,
       timeLeft,
@@ -129,7 +169,8 @@ export default class App extends Component {
         <section className="main">
           <TaskList
             tasks={visibleTasks}
-            onTimeLeftEdited={this.editTimeLeft}
+            onPause={this.onPause}
+            onPlay={this.onTimerPlay}
             onTaskTextEdited={this.editTaskText}
             onTaskDeleted={this.deleteTask}
             onToggleCompleted={this.onToggleCompleted}

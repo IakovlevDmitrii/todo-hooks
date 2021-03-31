@@ -11,57 +11,45 @@ export default class Timer extends Component {
   };
 
   componentDidMount() {
-    const { timeLeft } = this.props;
+    const { isTimerStopped, timeLeft } = this.props;
 
     if (timeLeft) {
-      this.setState({
-        timeLeft,
-      });
+      this.updateStateField('isTimerStopped', isTimerStopped);
+      this.updateStateField('timeLeft', timeLeft);
     }
   }
 
-  componentWillUnmount() {
-    clearInterval(this.timer);
+  componentDidUpdate(prevProps, prevState) {
+    const { isTimerStopped, timeLeft } = this.props;
+
+    if (timeLeft !== prevProps.timeLeft) {
+      this.updateStateField('timeLeft', timeLeft);
+    }
+
+    if (isTimerStopped !== prevState.isTimerStopped) {
+      this.updateStateField('isTimerStopped', isTimerStopped);
+    }
   }
 
-  onPlay = (event) => {
+  updateStateField = (name, value) => {
+    this.setState({
+      [name]: value,
+    });
+  };
+
+  onTimerPlay = (event) => {
+    const { onPlay } = this.props;
     const { isTimerStopped } = this.state;
     const isTarget = event.target.tagName === 'IMG';
 
     if (isTarget && isTimerStopped) {
-      this.timer = setInterval(this.reduceTimerLeft, 1000);
-
-      this.setState({
-        isTimerStopped: false,
-      });
-    }
-  };
-
-  reduceTimerLeft = () => {
-    let { timeLeft } = this.state;
-
-    if (timeLeft > 0) {
-      timeLeft -= 1;
-
-      this.setState({
-        timeLeft,
-      });
-    } else {
-      clearInterval(this.timer);
+      onPlay();
     }
   };
 
   onTimerPause = () => {
-    const { onTimeLeftEdited } = this.props;
-    const { timeLeft } = this.state;
-
-    clearInterval(this.timer);
-
-    this.setState({
-      isTimerStopped: true,
-    });
-
-    onTimeLeftEdited(timeLeft);
+    const { onPause } = this.props;
+    onPause();
   };
 
   render() {
@@ -84,7 +72,7 @@ export default class Timer extends Component {
         <button
           className="icon icon-play"
           onClick={(event) => {
-            this.onPlay(event);
+            this.onTimerPlay(event);
           }}
           type="button"
           aria-label="play"
@@ -101,6 +89,8 @@ export default class Timer extends Component {
 }
 
 Timer.propTypes = {
+  isTimerStopped: PropTypes.bool.isRequired,
+  onPause: PropTypes.func.isRequired,
+  onPlay: PropTypes.func.isRequired,
   timeLeft: PropTypes.number.isRequired,
-  onTimeLeftEdited: PropTypes.func.isRequired,
 };
