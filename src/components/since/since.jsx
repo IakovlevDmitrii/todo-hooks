@@ -1,43 +1,33 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import { formatDistanceToNow } from 'date-fns';
 import PropTypes from 'prop-types';
 
-export default class Since extends Component {
-  static defaultProps = {
-    updateInterval: 2000,
+const timerList = [];
+
+const Since = ({ startTime, id, updateInterval }) => {
+  const [created, setCreated] = useState(null);
+
+  const countdown = () => {
+    setCreated(formatDistanceToNow(startTime, { includeSeconds: true }));
   };
 
-  static propTypes = {
-    updateInterval: PropTypes.number,
-    startTime: PropTypes.instanceOf(Date).isRequired,
-  };
+  useEffect(() => {
+    timerList[id] = setInterval(() => countdown(), updateInterval);
 
-  state = {
-    created: null,
-  };
+    return () => clearInterval(timerList[id]);
+  });
 
-  componentDidMount() {
-    const { updateInterval } = this.props;
-    this.timer = setInterval(() => this.countdown(), updateInterval);
-  }
+  return <span className="created">created {created}</span>;
+};
 
-  componentWillUnmount() {
-    clearInterval(this.timer);
-  }
+Since.propTypes = {
+  id: PropTypes.number.isRequired,
+  startTime: PropTypes.instanceOf(Date).isRequired,
+  updateInterval: PropTypes.number,
+};
 
-  calculateInterval() {
-    const { startTime } = this.props;
-    return formatDistanceToNow(startTime, { includeSeconds: true });
-  }
+Since.defaultProps = {
+  updateInterval: 2000,
+};
 
-  countdown() {
-    this.setState({
-      created: this.calculateInterval(),
-    });
-  }
-
-  render() {
-    const { created } = this.state;
-    return <span className="created">created {created}</span>;
-  }
-}
+export default Since;
