@@ -3,6 +3,8 @@ import NewTaskForm from '../new-task-form';
 import TaskList from '../task-list';
 import Footer from '../footer';
 
+import { FilterProvider } from '../context/filter-context';
+
 import filterTasks from '../../utils/filter-tasks';
 
 import '../../style.css';
@@ -10,58 +12,42 @@ import '../../style.css';
 let nextId = 1;
 
 const App = () => {
-  // const timerList = [];
-
-  // function createTask(taskText, timeLeft) {
-  function createTask(taskText) {
+  const createTask = (taskText, timeLeft) => {
     const id = nextId;
     nextId += 1;
 
     return {
       id,
       isCompleted: false,
-      // isTimerStopped: true,
       startTime: new Date(),
       taskText,
-      // timeLeft,
-      timeLeft: 100,
+      timeLeft,
     };
-  }
+  };
 
-  // const [tasks, setTasks] = useState([createTask('First', 60), createTask('Second', 60), createTask('Third', 60)]);
-  const [tasks, setTasks] = useState([createTask('First'), createTask('Second'), createTask('Third')]);
+  const [tasks, setTasks] = useState([createTask('First', 60), createTask('Second', 60), createTask('Third', 60)]);
 
   const [filter, setFilter] = useState('all');
 
-  function getTaskIndexById(id) {
+  const getTaskIndexById = (id) => {
     return tasks.findIndex((task) => task.id === id);
-  }
+  };
 
-  function deleteTask(id) {
+  const deleteTask = (id) => {
     setTasks(() => {
       const index = getTaskIndexById(id);
-      // const oldTask = tasks[index];
-      // const { isTimerStopped } = oldTask;
-      //
-      // if (!isTimerStopped) {
-      //   clearInterval(timerList[id]);
-      // }
 
       return [...tasks.slice(0, index), ...tasks.slice(index + 1)];
     });
-  }
+  };
 
-  // function addTask(taskText, timeLeft) {
-  //   const newTask = createTask(taskText, timeLeft);
-  //   setTasks(() => [...tasks, newTask]);
-  // }
-  function addTask(taskText) {
-    const newTask = createTask(taskText);
+  const addTask = (taskText, timeLeft) => {
+    const newTask = createTask(taskText, timeLeft);
 
     setTasks(() => [...tasks, newTask]);
-  }
+  };
 
-  function editTaskText(id, taskText) {
+  const editTaskText = (id, taskText) => {
     setTasks(() => {
       const index = getTaskIndexById(id);
       const oldTask = tasks[index];
@@ -69,9 +55,9 @@ const App = () => {
 
       return [...tasks.slice(0, index), newTask, ...tasks.slice(index + 1)];
     });
-  }
+  };
 
-  function onToggleCompleted(id) {
+  const onToggleCompleted = (id) => {
     setTasks(() => {
       const index = getTaskIndexById(id);
       const oldTask = tasks[index];
@@ -79,74 +65,34 @@ const App = () => {
 
       return [...tasks.slice(0, index), newTask, ...tasks.slice(index + 1)];
     });
-  }
+  };
 
-  // function reduceTimeLeft(id) {
-  //   setTasks(() => {
-  //     const index = getTaskIndexById(id);
-  //     const oldTask = tasks[index];
-  //
-  //     let { timeLeft } = oldTask;
-  //     timeLeft -= 1;
-  //
-  //     if (timeLeft === 0) {
-  //       clearInterval(timerList[id]);
-  //     }
-  //
-  //     const isTimerStopped = false;
-  //     const newTask = { ...oldTask, isTimerStopped, timeLeft };
-  //
-  //     return [...tasks.slice(0, index), newTask, ...tasks.slice(index + 1)];
-  //   });
-  // }
-
-  // function onTimerPlay(id) {
-  //   timerList[id] = setInterval(() => reduceTimeLeft(id), 1000);
-  // }
-
-  // function onPause(id) {
-  //   clearInterval(timerList[id]);
-  //
-  //   setTasks(() => {
-  //     const index = getTaskIndexById(id);
-  //     const oldTask = tasks[index];
-  //     const newTask = { ...oldTask, isTimerStopped: true };
-  //     return [...tasks.slice(0, index), newTask, ...tasks.slice(index + 1)];
-  //   });
-  // }
-
-  function deleteAllCompleted() {
+  const deleteAllCompleted = () => {
     setTasks(() => tasks.filter((task) => !task.isCompleted));
-  }
+  };
 
-  function onFilterChange(filterText) {
+  const onFilterChange = (filterText) => {
     setFilter(filterText);
-  }
+  };
 
   const visibleTasks = filterTasks(tasks, filter);
-
   const tasksLeftCounter = tasks.filter((task) => !task.isCompleted).length;
 
   return (
-    <section className="todoapp">
-      <NewTaskForm onTaskAdded={addTask} />
-      <section className="main">
-        <TaskList
-          tasks={visibleTasks}
-          // onPause={onPause}
-          // onPlay={onTimerPlay}
-          onTaskTextEdited={editTaskText}
-          onTaskDeleted={deleteTask}
-          onToggleCompleted={onToggleCompleted}
-        />
-        <Footer
-          tasksLeft={tasksLeftCounter}
-          onDeleted={deleteAllCompleted}
-          onFilterChange={onFilterChange}
-          filter={filter}
-        />
+    <FilterProvider value={filter}>
+      <section className="todoapp">
+        <NewTaskForm onTaskAdded={addTask} />
+        <section className="main">
+          <TaskList
+            tasks={visibleTasks}
+            onTaskTextEdited={editTaskText}
+            onTaskDeleted={deleteTask}
+            onToggleCompleted={onToggleCompleted}
+          />
+          <Footer tasksLeft={tasksLeftCounter} onDeleted={deleteAllCompleted} onFilterChange={onFilterChange} />
+        </section>
       </section>
-    </section>
+    </FilterProvider>
   );
 };
 

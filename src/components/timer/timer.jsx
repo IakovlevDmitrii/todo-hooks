@@ -1,203 +1,69 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
-import play from './play.png';
-import pause from './pause.png';
+import getMinutesAndSecondsFromSeconds from '../../utils/get-minutes-and-seconds-from-seconds';
 
-const Timer = ({ timeLeft }) => {
-  const [secondsLeft, setSecondsLeft] = useState(0);
-  // const [ isTimerStopped, setIsTimerStopped ] = useState(true);
+import playImageSource from './play.png';
+import pauseImageSource from './pause.png';
 
-  // componentDidMount() {
-  //   const {
-  //     isTimerStopped,
-  //     timeLeft
-  //   } = this.props;
-  //
-  //   if (timeLeft) {
-  //     this.updateStateField('isTimerStopped', isTimerStopped);
-  //     this.updateStateField('timeLeft', timeLeft);
-  //   }
-  // }
+const timers = [];
 
-  useEffect(() => {
-    setSecondsLeft(timeLeft);
-    return () => setSecondsLeft(0);
-  }, [timeLeft]);
+const Timer = ({ id, timeLeft }) => {
+  const [secondsLeft, setSecondsLeft] = useState(timeLeft);
+  const [isTimerStopped, setIsTimerStopped] = useState(true);
 
-  // componentDidUpdate(prevProps, prevState) {
-  //   const { isTimerStopped, timeLeft } = this.props;
-  //
-  //   if (timeLeft !== prevProps.timeLeft) {
-  //     this.updateStateField('timeLeft', timeLeft);
-  //   }
-  //
-  //   if (isTimerStopped !== prevState.isTimerStopped) {
-  //     this.updateStateField('isTimerStopped', isTimerStopped);
-  //   }
-  // }
+  const reduceSecondsLeft = () => {
+    setSecondsLeft((sec) => {
+      if (sec === 1) {
+        clearInterval(timers[id]);
+        setIsTimerStopped(true);
+      }
 
-  // updateStateField = (name, value) => {
-  //   this.setState({
-  //     [name]: value,
-  //   });
-  // };
-  //
-  // onTimerPlay = (event) => {
-  //   const { onPlay } = this.props;
-  //   const { isTimerStopped } = this.state;
-  //   const isTarget = event.target.tagName === 'IMG';
-  //
-  //   if (isTarget && isTimerStopped) {
-  //     onPlay();
-  //   }
-  // };
+      return sec - 1;
+    });
+  };
 
-  // onTimerPause = () => {
-  //   const { onPause } = this.props;
-  //   onPause();
-  // };
+  const onPlay = (event) => {
+    const isTarget = event.target.tagName === 'IMG';
 
-  let minutes = Math.floor(secondsLeft / 60);
-  if (minutes < 10) {
-    minutes = `0${String(minutes)}`;
-  }
+    if (secondsLeft && isTarget && isTimerStopped) {
+      timers[id] = setInterval(reduceSecondsLeft, 1000);
+      setIsTimerStopped(false);
+    }
+  };
 
-  let seconds = secondsLeft - minutes * 60;
-  if (seconds < 10) {
-    seconds = `0${String(seconds)}`;
-  }
+  const onPause = (event) => {
+    const isTarget = event.target.tagName === 'IMG';
 
-  const time = `${minutes}:${seconds}`;
+    if (isTarget && !isTimerStopped) {
+      clearInterval(timers[id]);
+      setIsTimerStopped(true);
+    }
+  };
+
+  const playPauseButton = isTimerStopped ? (
+    <button className="icon icon-play" onClick={onPlay} type="button" aria-label="play">
+      <img src={playImageSource} alt="play" />
+    </button>
+  ) : (
+    <button className="icon icon-pause" onClick={onPause} type="button" aria-label="pause">
+      <img src={pauseImageSource} alt="pause" />
+    </button>
+  );
+
+  const time = getMinutesAndSecondsFromSeconds(secondsLeft);
 
   return (
     <span className="description">
-      <button
-        className="icon icon-play"
-        // onClick={ (event) => { this.onTimerPlay(event) } }
-        type="button"
-        aria-label="play"
-      >
-        <img src={play} alt="play" />
-      </button>
-      <button
-        className="icon icon-pause"
-        // onClick={this.onTimerPause}
-        type="button"
-        aria-label="pause"
-      >
-        <img src={pause} alt="pause" />
-      </button>
-      <span>{time}</span>
+      {playPauseButton}
+      <span className="timer">{time}</span>
     </span>
   );
 };
 
 Timer.propTypes = {
-  // isTimerStopped: PropTypes.bool.isRequired,
-  // onPause: PropTypes.func.isRequired,
-  // onPlay: PropTypes.func.isRequired,
+  id: PropTypes.number.isRequired,
   timeLeft: PropTypes.number.isRequired,
 };
 
 export default Timer;
-
-// import React, { Component } from 'react';
-// import PropTypes from 'prop-types';
-//
-// import play from './play.png';
-// import pause from './pause.png';
-//
-// export default class Timer extends Component {
-//   state = {
-//     timeLeft: 0,
-//     isTimerStopped: true,
-//   };
-//
-//   componentDidMount() {
-//     const {
-//       isTimerStopped,
-//       timeLeft
-//     } = this.props;
-//
-//     if (timeLeft) {
-//       this.updateStateField('isTimerStopped', isTimerStopped);
-//       this.updateStateField('timeLeft', timeLeft);
-//     }
-//   }
-//
-//   componentDidUpdate(prevProps, prevState) {
-//     const { isTimerStopped, timeLeft } = this.props;
-//
-//     if (timeLeft !== prevProps.timeLeft) {
-//       this.updateStateField('timeLeft', timeLeft);
-//     }
-//
-//     if (isTimerStopped !== prevState.isTimerStopped) {
-//       this.updateStateField('isTimerStopped', isTimerStopped);
-//     }
-//   }
-//
-//   updateStateField = (name, value) => {
-//     this.setState({
-//       [name]: value,
-//     });
-//   };
-//
-//   onTimerPlay = (event) => {
-//     const { onPlay } = this.props;
-//     const { isTimerStopped } = this.state;
-//     const isTarget = event.target.tagName === 'IMG';
-//
-//     if (isTarget && isTimerStopped) {
-//       onPlay();
-//     }
-//   };
-//
-//   onTimerPause = () => {
-//     const { onPause } = this.props;
-//     onPause();
-//   };
-//
-//   render() {
-//     const { timeLeft } = this.state;
-//
-//     let minutes = Math.floor(timeLeft / 60);
-//     if (minutes < 10) {
-//       minutes = `0${String(minutes)}`;
-//     }
-//
-//     let seconds = timeLeft - minutes * 60;
-//     if (seconds < 10) {
-//       seconds = `0${String(seconds)}`;
-//     }
-//
-//     const time = `${minutes}:${seconds}`;
-//
-//     return (
-//        <span className="description">
-//         <button
-//            className="icon icon-play"
-//            onClick={(event) => {
-//              this.onTimerPlay(event);
-//            }}
-//            type="button"
-//            aria-label="play"
-//         >
-//           <img src={play} alt="play" />
-//         </button>
-//         <button className="icon icon-pause" onClick={this.onTimerPause} type="button" aria-label="pause">
-//           <img src={pause} alt="pause" />
-//         </button>
-//         <span>{time}</span>
-//       </span>
-//     );
-//   }
-// }
-//
-// Timer.propTypes = {
-//   isTimerStopped: PropTypes.bool.isRequired,
-//   onPause: PropTypes.func.isRequired,
-//   onPlay: PropTypes.func.isRequired,
-//   timeLeft: PropTypes.number.isRequired,
-// };

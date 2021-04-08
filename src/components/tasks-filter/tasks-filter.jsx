@@ -1,7 +1,11 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
 
-const TasksFilter = ({ filter, onFilterChange }) => {
+import { filterContext } from '../context/filter-context/filter-context';
+
+const TasksFilter = ({ onFilterChange }) => {
+  const filter = useContext(filterContext);
+
   let buttons = [
     { name: 'all', label: 'All' },
     { name: 'active', label: 'Active' },
@@ -24,7 +28,6 @@ const TasksFilter = ({ filter, onFilterChange }) => {
 };
 
 TasksFilter.propTypes = {
-  filter: PropTypes.string.isRequired,
   onFilterChange: PropTypes.func.isRequired,
 };
 
