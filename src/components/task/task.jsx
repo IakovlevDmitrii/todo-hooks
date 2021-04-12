@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import Since from '../since';
 import Timer from '../timer/timer';
 
-const Task = ({ onPlayClick, onTaskDeleted, onTaskTextEdited, onToggleCompleted, task }) => {
+const Task = ({ onTaskDeleted, onTaskTextEdited, onToggleCompleted, task }) => {
   const { id, taskText, startTime, isCompleted, timeLeft } = task;
 
   const [editedText, setEditedText] = useState('');
@@ -36,7 +36,7 @@ const Task = ({ onPlayClick, onTaskDeleted, onTaskTextEdited, onToggleCompleted,
         <input className="toggle" onChange={onToggleCompleted} checked={isCompleted} type="checkbox" />
         <label>
           <span className="title">{taskText}</span>
-          <Timer timeLeft={timeLeft} onPlayClick={() => onPlayClick(id)} />
+          <Timer timeLeft={timeLeft} id={id} />
           <Since startTime={startTime} id={id} className="completed" />
         </label>
         <button className="icon icon-edit" onClick={() => setIsEditing(true)} type="button" aria-label="Edit button" />
@@ -55,7 +55,6 @@ const Task = ({ onPlayClick, onTaskDeleted, onTaskTextEdited, onToggleCompleted,
 };
 
 Task.propTypes = {
-  onPlayClick: PropTypes.func.isRequired,
   onTaskDeleted: PropTypes.func.isRequired,
   onTaskTextEdited: PropTypes.func.isRequired,
   onToggleCompleted: PropTypes.func.isRequired,

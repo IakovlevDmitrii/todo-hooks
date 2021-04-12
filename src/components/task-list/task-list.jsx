@@ -2,14 +2,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Task from '../task';
 
-const TaskList = ({ tasks, onPlayClick, onTaskDeleted, onTaskTextEdited, onToggleCompleted }) => {
+const TaskList = ({ tasks, onTaskDeleted, onTaskTextEdited, onToggleCompleted }) => {
   const tasksList = tasks.map((task) => {
     const { id } = task;
     return (
       <Task
         key={id}
         task={task}
-        onPlayClick={onPlayClick}
         onTaskDeleted={() => onTaskDeleted(id)}
         onTaskTextEdited={onTaskTextEdited}
         onToggleCompleted={() => onToggleCompleted(id)}
@@ -21,7 +20,6 @@ const TaskList = ({ tasks, onPlayClick, onTaskDeleted, onTaskTextEdited, onToggl
 };
 
 TaskList.propTypes = {
-  onPlayClick: PropTypes.func.isRequired,
   onTaskDeleted: PropTypes.func.isRequired,
   onTaskTextEdited: PropTypes.func.isRequired,
   onToggleCompleted: PropTypes.func.isRequired,

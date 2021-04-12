@@ -10,7 +10,6 @@ import filterTasks from '../../utils/filter-tasks';
 import '../../style.css';
 
 let nextId = 1;
-// const timers = [];
 
 const App = () => {
   const createTask = (taskText, timeLeft) => {
@@ -20,7 +19,6 @@ const App = () => {
     return {
       id,
       isCompleted: false,
-      isTimerStopped: true,
       startTime: new Date(),
       taskText,
       timeLeft,
@@ -77,58 +75,6 @@ const App = () => {
     setFilter(filterText);
   };
 
-  const reduceSecondsLeft = (id) => {
-    console.log(id);
-    // setTasks(() => {
-    //   const index = getTaskIndexById(id);
-    //   console.log(id);
-    //   const oldTask = tasks[index];
-    //
-    //   let { timeLeft } = oldTask;
-    //   timeLeft -= 1;
-    //
-    //   if (timeLeft === 0) {
-    //     clearInterval(timers[id]);
-    //   }
-    //
-    //   const isTimerStopped = false;
-    //   const newTask = { ...oldTask, isTimerStopped, timeLeft };
-    //
-    //   return [...tasks.slice(0, index), newTask, ...tasks.slice(index + 1)];
-    // });
-  };
-
-  //   setSecondsLeft((sec) => {
-  //     if (sec === 1) {
-  //       clearInterval(timers[id]);
-  //       setIsTimerStopped(true);
-  //     }
-  //
-  //     return sec - 1;
-  //   });
-  // };
-
-  const onPlayClick = (id) => {
-    reduceSecondsLeft(id);
-    // timers[id] = setInterval(reduceSecondsLeft, 1000);
-
-    //   const isTarget = event.target.tagName === 'IMG';
-    //
-    //   if (secondsLeft && isTarget && isTimerStopped) {
-    //     timers[id] = setInterval(reduceSecondsLeft, 1000);
-    //     setIsTimerStopped(false);
-    //   }
-  };
-
-  // const onPauseClick = (event) => {
-  //   const isTarget = event.target.tagName === 'IMG';
-  //
-  //   if (isTarget && !isTimerStopped) {
-  //     clearInterval(timers[id]);
-  //     setIsTimerStopped(true);
-  //   }
-  // };
-
   const visibleTasks = filterTasks(tasks, filter);
   const tasksLeftCounter = tasks.filter((task) => !task.isCompleted).length;
 
@@ -139,7 +85,6 @@ const App = () => {
         <section className="main">
           <TaskList
             tasks={visibleTasks}
-            onPlayClick={onPlayClick}
             onTaskTextEdited={editTaskText}
             onTaskDeleted={deleteTask}
             onToggleCompleted={onToggleCompleted}
