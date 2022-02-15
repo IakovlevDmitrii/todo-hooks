@@ -1,32 +1,32 @@
+# Учебный проект
+В рамках программы изучения React
 
-todo app
+### Цели:
+- Изучение React
+- Изучение React Hooks
 
-Решение можно посмотреть здесь:
-https://todo-hooks-three.vercel.app/
+### Задание:
+Переписать [ToDo приложение](https://github.com/IakovlevDmitrii/todo),
+используя React Hooks
 
-Инструменты:
+### Инструменты:
+> - HTML
+> - CSS
+> - JS
+> - React
+> - React Hooks
+> - #### Webpack
+>> - Babel
+>> - ESLint
+>> - Lint-staged
+>> - Prettier
+>> - Husky
 
-React
+### Решение можно посмотреть [здесь](https://todo-hooks-three.vercel.app/)
 
-react hooks
+---
+_Создан_:  
+Mar 29, 2021
 
-antd:
-https://ant.design/
-
-date-fns:
-https://date-fns.org/
-
-lodash:
-https://lodash.com/
-
-prop-types
-
-babel
-
-eslint
-
-lint-staged
-
-prettier
-
-husky
+_Последние изменения_:  
+Feb 15, 2022
