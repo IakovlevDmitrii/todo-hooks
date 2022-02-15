@@ -4,6 +4,7 @@
 ### Цели:
 - Изучение React
 - Изучение React Hooks
+- Использовать библиотеку [date-fns](https://date-fns.org/)
 
 ### Задание:
 Переписать [ToDo приложение](https://github.com/IakovlevDmitrii/todo),
